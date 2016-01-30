@@ -1,0 +1,22 @@
+connect blue cable
+
+roscd netft_rft_driver
+bin/netft_node --address 128.178.145.98
+
+
+
+
+
+
+TO CONNECT DIFFERENT ROS_MASTER
+
+0. run roscore on other pc
+1. export ROS_MASTER_URI="http://INSERT_IP_HERE:11311"
+2. rosrun neft_rdt_driver netft_node 128.178.145.98
+
+
+
+% Net Box
+
+
+128.178.145.212
