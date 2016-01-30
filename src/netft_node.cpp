@@ -56,13 +56,12 @@ int main(int argc, char **argv)
 { 
   ros::init(argc, argv, "netft_node");
 
-  ros::NodeHandle nh("~");
+  ros::NodeHandle nh;
   std::string frame_id;
 
   nh.param<std::string>("frame_id",frame_id,"");
-  bool b_bias_on_startup;
-  nh.param<bool>("bias_on_startup",b_bias_on_startup,false);
 
+  bool b_bias_on_startup;
   float pub_rate_hz;
   string address;
 
@@ -71,6 +70,7 @@ int main(int argc, char **argv)
     ("help", "display help")
     ("rate", po::value<float>(&pub_rate_hz)->default_value(100.0), "set publish rate (in hertz)")
     ("wrench", "publish older Wrench message type instead of WrenchStamped")
+    ("bias",po::value<bool>(&b_bias_on_startup)->default_value(false),"if true computes the bias and substracts it at every time step from the signal")
     ("address", po::value<string>(&address), "IP address of NetFT box")
     ;
      
