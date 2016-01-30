@@ -5,9 +5,8 @@ ROS package for the ATI 6-axis force torque sensor.
 
 TODO: description of the ATI setup, with ATI box, how to connect to ethernet and ping the box.
 
-Once you have connected the ATI box with an ethernet cable and power supply you should first proceed to check 
-that you have a correctly working networking communication between your PC and the ATI FT sensor.
-
+Once you have connected the ATI box with an ethernet and power supply cables you should proceed 
+the network connection to the box. From your PC try and ping the FT sensor.
 ```
 $ ping 128.178.145.98
 ```
