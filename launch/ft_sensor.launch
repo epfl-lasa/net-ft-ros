@@ -1,9 +1,12 @@
 <?xml version="1.0"?>
 <launch>
 
-	<group ns="tf_sensor">
-		<arg name="ip_address" 	default="128.178.145.98" />
-		<node name="force_torque_sensor" pkg="netft_rdt_driver" type="netft_node"  args="--address $(arg ip_address)" required="true" output="screen"/>
+	<group ns="ft_sensor">
+		<arg  name="ip_address"  default="128.178.145.98" />
+		<arg  name="bias"	 default="False"/>
+		<arg  name="rate" 	 default="100"/>
+		<node name="force_torque_sensor" pkg="netft_rdt_driver" type="netft_node" 
+		    args="--address $(arg ip_address) --rate $(arg rate) --bias $(arg bias)" required="true" output="screen"/>
 	</group>
 
 </launch>
