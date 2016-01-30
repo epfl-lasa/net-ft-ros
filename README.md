@@ -39,19 +39,19 @@ wrench:
 
 There are four arguments the node takes, see the  [**launch file**](https://github.com/epfl-lasa/net-ft-ros/blob/master/launch/ft_sensor.launch)  for more details.
 
-* ROS service
+* **ROS service**
 ```
  rosservice call /ft_sensor/bias_cmd "cmd: 'bias'"
 ```
 
-* rqt_plot
+* **rqt_plot**
 You can visualise the force-torque sensor topic with the rqt perspective. In the 
 launch file run the script rqt script:
 ```
 ./launch_rqt.sh
 ```
 
-* Rviz
+* **Rviz**
 Add a [**Wrench**](http://wiki.ros.org/rviz/DisplayTypes/Wrench) message type in Rviz and make sure
 it is subscribing to the appropriate ros message, namely **/ft_sensor/netft_data** 
 
