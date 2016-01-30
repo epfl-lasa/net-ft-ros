@@ -38,11 +38,7 @@ wrench:
     z: 0.22924
 ```
 
-* Node arguments
-ip address
-rate
-frame_id
-bias_on_startup
+There are four arguments the node takes, see the  [**launch file*](https://github.com/epfl-lasa/net-ft-ros/blob/master/launch/ft_sensor.launch)  for more details.
 
 * ROS service
 ```
