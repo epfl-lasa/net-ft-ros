@@ -5,9 +5,8 @@ ROS package for the ATI 6-axis force torque sensor.
 
 TODO: description of the ATI setup, with ATI box, how to connect to ethernet and ping the box.
 
-Once you have connected the ATI box with an ethernet cable and power supply you should first proceed to check 
-that you have a correctly working networking communication between your PC and the ATI FT sensor.
-
+Once you have connected the ATI box with an ethernet and power supply cable, check 
+the network connection. From your PC try and ping the FT sensor.
 ```
 $ ping 128.178.145.98
 ```
@@ -38,17 +37,22 @@ wrench:
     z: 0.22924
 ```
 
-There are four arguments the node takes, see the  [**launch file*](https://github.com/epfl-lasa/net-ft-ros/blob/master/launch/ft_sensor.launch)  for more details.
+There are four arguments the node takes, see the  [**launch file**](https://github.com/epfl-lasa/net-ft-ros/blob/master/launch/ft_sensor.launch)  for more details.
 
-* ROS service
+* **ROS service**
 ```
  rosservice call /ft_sensor/bias_cmd "cmd: 'bias'"
 ```
 
-* Visualisation
+* **rqt_plot**
+You can visualise the force-torque sensor topic with the rqt perspective. In the 
+launch file run the script rqt script:
+```
+./launch_rqt.sh
+```
 
-
-* Rviz
-* 
+* **Rviz**
+Add a [**Wrench**](http://wiki.ros.org/rviz/DisplayTypes/Wrench) message type in Rviz and make sure
+it is subscribing to the appropriate ros message, namely **/ft_sensor/netft_data** 
 
 
