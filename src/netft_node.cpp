@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
   std::string frame_id;
 
-  nh.param<std::string>("frame_id",frame_id,"");
+  nh.param<std::string>(nh.getNamespace() + "/frame_id",frame_id,"");
 
   bool b_bias_on_startup;
   float pub_rate_hz;
@@ -121,6 +121,9 @@ int main(int argc, char **argv)
   diag_array.status.reserve(1);
   diagnostic_updater::DiagnosticStatusWrapper diag_status;
   ros::Time                                   last_diag_pub_time(ros::Time::now());
+
+  /// Function to compute the BIAS in and subscract it.
+
   netft_rdt_driver::NetFTRDTDriverBias        bias(nh);
 
 
