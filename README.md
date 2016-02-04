@@ -45,6 +45,22 @@ There are four arguments the node takes, see the  [**launch file**](https://gith
 ```
  rosservice call /ft_sensor/bias_cmd "cmd: 'bias'"
 ```
+To call the service in C++ code make sure to include the service message type:
+```
+#include "netft_rdt_driver/String_cmd.h"
+...
+ros::ServiceClient ft_client = nh.serviceClient<netft_rdt_driver::String_cmd>("/ft_sensor/bias_cmd");
+netft_rdt_driver::String_cmd srv;
+srv.request.cmd  = "bias";
+srv.response.res = "";
+f (ft_client.call(srv))
+{
+  ROS_INFO_STREAM("net_ft res: " << srv.response.res);
+}else{
+  ROS_ERROR("Failed to call netft bias service");
+}
+```
+
 
 * **rqt_plot**
 You can visualise the force-torque sensor topic with the rqt perspective. In the 
