@@ -10,7 +10,9 @@ the network connection. From your PC try and ping the FT sensor.
 ```
 $ ping 128.178.145.98
 ```
-If you can ping the FT sensor then you are ready to use it.
+If you can ping the FT sensor then you are ready to use it. You can also put the ip into your web-brower 
+and (if you could ping it) you should be able to see a webpage which shows the status of the FT. Normaly
+the status should be: Healthy.
 
 ## Launch
 
