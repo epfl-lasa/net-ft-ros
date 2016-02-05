@@ -20,8 +20,12 @@ the status should be: Healthy.
 $ roslaunch ft_sensor.launch 
 ```
 
-The force-torque information will be published on the topic: **geometry_msgs/WrenchStamped**
+The force-torque information will be published on the topic: **/ft_sensor/netft_data**.
+The message type is **geometry_msgs/WrenchStamped**.
 ```
+rostopic echo /ft_sensor/netft_data
+
+
 header: 
   seq: 9377
   stamp: 
