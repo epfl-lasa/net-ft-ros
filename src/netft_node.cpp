@@ -64,6 +64,7 @@ int main(int argc, char **argv)
   bool b_bias_on_startup;
   float pub_rate_hz;
   double rot;
+  tf::Vector3 scale_F;
   string address;
 
   po::options_description desc("Options");
@@ -73,6 +74,9 @@ int main(int argc, char **argv)
     ("wrench", "publish older Wrench message type instead of WrenchStamped")
     ("bias",po::value<bool>(&b_bias_on_startup)->default_value(false),"if true computes the bias and substracts it at every time step from the signal")
     ("rot",po::value<double>(&rot)->default_value(0.0)," roation of the frame of reference of force torque vectors")
+    ("scale_x",po::value<double>(&scale_F[0])->default_value(1.0)," x-axis scale factor [-1 or 1]")
+    ("scale_y",po::value<double>(&scale_F[1])->default_value(1.0)," y-axis scale factor [-1 or 1]")
+    ("scale_z",po::value<double>(&scale_F[2])->default_value(1.0)," z-axis scale factor [-1 or 1]")
     ("address", po::value<string>(&address), "IP address of NetFT box")
     ;
      
@@ -126,7 +130,7 @@ int main(int argc, char **argv)
 
   /// Function to compute the BIAS in and subscract it.
 
-  netft_rdt_driver::NetFTRDTDriverBias        bias(nh,rot);
+  netft_rdt_driver::NetFTRDTDriverBias        bias(nh,rot,scale_F);
 
 
     if(b_bias_on_startup){

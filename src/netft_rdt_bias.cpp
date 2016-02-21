@@ -2,8 +2,9 @@
 
 namespace netft_rdt_driver {
 
-NetFTRDTDriverBias::NetFTRDTDriverBias(ros::NodeHandle& nh, double rot,std::size_t num_points):
-num_points(num_points)
+NetFTRDTDriverBias::NetFTRDTDriverBias(ros::NodeHandle& nh, double rot,const tf::Vector3& scale_F, std::size_t num_points):
+num_points(num_points),
+  scale_F(scale_F)
 {
     count                = 0;
     force_b.x  = 0;
@@ -41,9 +42,9 @@ void NetFTRDTDriverBias::update(geometry_msgs::Wrench& wrench){
         tmp[1] = wrench.force.y;
         tmp[2] = wrench.force.z;
         tmp    = Rot * tmp;
-        wrench.force.x = tmp[0];
-        wrench.force.y = tmp[1];
-        wrench.force.z = tmp[2];
+        wrench.force.x = tmp[0] * scale_F[0];
+        wrench.force.y = tmp[1] * scale_F[1];
+        wrench.force.z = tmp[2] * scale_F[2];
 
         // Rotate the torque vector
         tmp[0] = wrench.torque.x;

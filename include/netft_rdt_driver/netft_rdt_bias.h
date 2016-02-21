@@ -17,7 +17,7 @@ class NetFTRDTDriverBias{
 
 public:
 
-    NetFTRDTDriverBias(ros::NodeHandle& nh, double rot,std::size_t num_points=50);
+    NetFTRDTDriverBias(ros::NodeHandle& nh, double rot, const tf::Vector3 &scale_F, std::size_t num_points=50);
 
     void update(geometry_msgs::Wrench& wrench);
 
@@ -40,6 +40,8 @@ private:
     ros::ServiceServer    service_server;
     ros::Publisher        pub_bias_status;
     std_msgs::Bool        bias_status;
+
+    tf::Vector3           scale_F;
 
     tf::Matrix3x3         Rot;
     tf::Vector3           tmp;
