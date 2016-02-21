@@ -2,7 +2,7 @@
 
 namespace netft_rdt_driver {
 
-NetFTRDTDriverBias::NetFTRDTDriverBias(ros::NodeHandle& nh,std::size_t num_points):
+NetFTRDTDriverBias::NetFTRDTDriverBias(ros::NodeHandle& nh, double rot,std::size_t num_points):
 num_points(num_points)
 {
     count                = 0;
@@ -17,7 +17,11 @@ num_points(num_points)
     torque_b_tmp = torque_b;
 
     service_server  = nh.advertiseService("bias_cmd",&NetFTRDTDriverBias::service_callback,this);
+    pub_bias_status = nh.advertise<std_msgs::Bool>("bias_status",1);
+    bias_status.data = false; // bias not set
     bComputeBias    = false;
+
+    Rot.setRPY(0,0,rot);
 
 }
 
@@ -30,6 +34,27 @@ void NetFTRDTDriverBias::update(geometry_msgs::Wrench& wrench){
         wrench.torque.x = wrench.torque.x - torque_b.x;
         wrench.torque.y = wrench.torque.y - torque_b.y;
         wrench.torque.z = wrench.torque.z - torque_b.z;
+
+
+        // Rotate the force vector
+        tmp[0] = wrench.force.x;
+        tmp[1] = wrench.force.y;
+        tmp[2] = wrench.force.z;
+        tmp    = Rot * tmp;
+        wrench.force.x = tmp[0];
+        wrench.force.y = tmp[1];
+        wrench.force.z = tmp[2];
+
+        // Rotate the torque vector
+        tmp[0] = wrench.torque.x;
+        tmp[1] = wrench.torque.y;
+        tmp[2] = wrench.torque.z;
+        tmp    = Rot * tmp;
+        wrench.torque.x = tmp[0];
+        wrench.torque.y = tmp[1];
+        wrench.torque.z = tmp[2];
+
+        pub_bias_status.publish(bias_status);
 
 }
 
@@ -61,7 +86,8 @@ void NetFTRDTDriverBias::compute_bias(const geometry_msgs::Wrench& wrench){
             torque_b = torque_b_tmp;
 
             print_bias();
-            bComputeBias = false;
+            bComputeBias     = false;
+            bias_status.data = true;
         }
     }
 }
@@ -72,6 +98,7 @@ bool NetFTRDTDriverBias::service_callback(netft_rdt_driver::String_cmd::Request&
 
     if(cmd == "bias"){
         bComputeBias=true;
+        bias_status.data=false;
         force_b_tmp.x  = force_b_tmp.y  = force_b_tmp.z  = 0;
         torque_b_tmp.x = torque_b_tmp.y = torque_b_tmp.z = 0;
         count = 0;

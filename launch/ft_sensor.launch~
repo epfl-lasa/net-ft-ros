@@ -5,13 +5,12 @@
 	<arg  name="bias"	 default="False"/>
 	<arg  name="rate" 	 default="100"/>	
 	<arg  name="frame_id"    default="myframe"/>
-
-
+	<arg  name="rot"	 default="0"/>
 
 	<group ns="ft_sensor">
 		<param name="frame_id" type="str" value="$(arg frame_id)"/>
 		<node name="force_torque_sensor" pkg="netft_rdt_driver" type="netft_node" 
-		    args="--address $(arg ip_address) --rate $(arg rate) --bias $(arg bias)" required="true" output="screen"/>
+		    args="--address $(arg ip_address) --rate $(arg rate) --bias $(arg bias) --rot $(arg rot)" required="true" output="screen"/>
 	</group>
 
 </launch>

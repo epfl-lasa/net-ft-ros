@@ -63,6 +63,7 @@ int main(int argc, char **argv)
 
   bool b_bias_on_startup;
   float pub_rate_hz;
+  double rot;
   string address;
 
   po::options_description desc("Options");
@@ -71,6 +72,7 @@ int main(int argc, char **argv)
     ("rate", po::value<float>(&pub_rate_hz)->default_value(100.0), "set publish rate (in hertz)")
     ("wrench", "publish older Wrench message type instead of WrenchStamped")
     ("bias",po::value<bool>(&b_bias_on_startup)->default_value(false),"if true computes the bias and substracts it at every time step from the signal")
+    ("rot",po::value<double>(&rot)->default_value(0.0)," roation of the frame of reference of force torque vectors")
     ("address", po::value<string>(&address), "IP address of NetFT box")
     ;
      
@@ -124,7 +126,7 @@ int main(int argc, char **argv)
 
   /// Function to compute the BIAS in and subscract it.
 
-  netft_rdt_driver::NetFTRDTDriverBias        bias(nh);
+  netft_rdt_driver::NetFTRDTDriverBias        bias(nh,rot);
 
 
     if(b_bias_on_startup){
