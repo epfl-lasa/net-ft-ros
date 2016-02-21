@@ -10,7 +10,9 @@ the network connection. From your PC try and ping the FT sensor.
 ```
 $ ping 128.178.145.98
 ```
-If you can ping the FT sensor then you are ready to use it.
+If you can ping the FT sensor then you are ready to use it. You can also put the ip into your web-brower 
+and (if you could ping it) you should be able to see a webpage which shows the status of the FT. Normaly
+the status should be: Healthy.
 
 ## Launch
 
@@ -18,8 +20,12 @@ If you can ping the FT sensor then you are ready to use it.
 $ roslaunch ft_sensor.launch 
 ```
 
-The force-torque information will be published on the topic: **geometry_msgs/WrenchStamped**
+The force-torque information will be published on the topic: **/ft_sensor/netft_data**.
+The message type is **geometry_msgs/WrenchStamped**.
 ```
+rostopic echo /ft_sensor/netft_data
+
+
 header: 
   seq: 9377
   stamp: 
@@ -43,6 +49,22 @@ There are four arguments the node takes, see the  [**launch file**](https://gith
 ```
  rosservice call /ft_sensor/bias_cmd "cmd: 'bias'"
 ```
+To call the service in C++ code make sure to include the service message type:
+```
+#include "netft_rdt_driver/String_cmd.h"
+...
+ros::ServiceClient ft_client = nh.serviceClient<netft_rdt_driver::String_cmd>("/ft_sensor/bias_cmd");
+netft_rdt_driver::String_cmd srv;
+srv.request.cmd  = "bias";
+srv.response.res = "";
+f (ft_client.call(srv))
+{
+  ROS_INFO_STREAM("net_ft res: " << srv.response.res);
+}else{
+  ROS_ERROR("Failed to call netft bias service");
+}
+```
+
 
 * **rqt_plot**
 You can visualise the force-torque sensor topic with the rqt perspective. In the 
