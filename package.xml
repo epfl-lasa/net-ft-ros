@@ -25,15 +25,18 @@
   <build_depend>	geometry_msgs		</build_depend>
   <run_depend>		geometry_msgs		</run_depend>
 
-  <build_depend>message_generation</build_depend>
-  <run_depend>message_generation</run_depend>
+  <build_depend>        message_generation      </build_depend>
+  <run_depend>          message_generation      </run_depend>
 
-  <build_depend>message_runtime</build_depend>
-  <run_depend>message_runtime</run_depend>
+  <build_depend>        message_runtime         </build_depend>
+  <run_depend>          message_runtime         </run_depend>
 
+  <build_depend>        std_msgs                </build_depend>
+  <run_depend>          std_msgs                </run_depend>
 
-  <build_depend>std_msgs</build_depend>
-  <run_depend>std_msgs</run_depend>
+  <build_depend>        tf                      </build_depend>
+  <run_depend>          tf                      </run_depend>
+
 
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lnetft_rdt_driver -Wl,-rpath,${prefix}/lib"/>
