@@ -1,4 +1,6 @@
 # net-ft-ros
+[![Build Status](https://travis-ci.org/epfl-lasa/net-ft-ros.svg?branch=master)](https://travis-ci.org/epfl-lasa/net-ft-ros)
+
 ROS package for the ATI 6-axis force torque sensor.
 
 ## Hardware setup
