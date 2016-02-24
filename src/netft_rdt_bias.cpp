@@ -2,11 +2,12 @@
 
 namespace netft_rdt_driver {
 
-NetFTRDTDriverBias::NetFTRDTDriverBias(ros::NodeHandle& nh, double rot,const tf::Vector3& scale_F, std::size_t num_points):
-num_points(num_points),
-  scale_F(scale_F)
+NetFTRDTDriverBias::NetFTRDTDriverBias(ros::NodeHandle& nh, double rot, const tf::Vector3& scale_F, double alpha, std::size_t num_points):
+    num_points(num_points),
+    scale_F(scale_F),
+    alpha(alpha)
 {
-    count                = 0;
+    count      = 0;
     force_b.x  = 0;
     force_b.y  = 0;
     force_b.z  = 0;
@@ -16,6 +17,12 @@ num_points(num_points),
 
     force_b_tmp  = force_b;
     torque_b_tmp = torque_b;
+
+    if(alpha==0){
+        bSmooth=false;
+    }else{
+        bSmooth=true;
+    }
 
     service_server  = nh.advertiseService("bias_cmd",&NetFTRDTDriverBias::service_callback,this);
     pub_bias_status = nh.advertise<std_msgs::Bool>("bias_status",1);
@@ -28,40 +35,55 @@ num_points(num_points),
 
 void NetFTRDTDriverBias::update(geometry_msgs::Wrench& wrench){
 
-        wrench.force.x = wrench.force.x - force_b.x;
-        wrench.force.y = wrench.force.y - force_b.y;
-        wrench.force.z = wrench.force.z - force_b.z;
+    // filter the signal
+    if(bSmooth){
+        exponentialSmoothing(wrench.force.x,wrench_tmp.force.x,alpha);
+        exponentialSmoothing(wrench.force.y,wrench_tmp.force.y,alpha);
+        exponentialSmoothing(wrench.force.z,wrench_tmp.force.z,alpha);
 
-        wrench.torque.x = wrench.torque.x - torque_b.x;
-        wrench.torque.y = wrench.torque.y - torque_b.y;
-        wrench.torque.z = wrench.torque.z - torque_b.z;
+        exponentialSmoothing(wrench.torque.x,wrench_tmp.torque.x,alpha);
+        exponentialSmoothing(wrench.torque.y,wrench_tmp.torque.y,alpha);
+        exponentialSmoothing(wrench.torque.z,wrench_tmp.torque.z,alpha);
+        wrench_tmp = wrench;
+    }
+
+    // remove the bias
+    wrench.force.x = wrench.force.x - force_b.x;
+    wrench.force.y = wrench.force.y - force_b.y;
+    wrench.force.z = wrench.force.z - force_b.z;
+
+    wrench.torque.x = wrench.torque.x - torque_b.x;
+    wrench.torque.y = wrench.torque.y - torque_b.y;
+    wrench.torque.z = wrench.torque.z - torque_b.z;
 
 
-        // Rotate the force vector
-        tmp[0] = wrench.force.x;
-        tmp[1] = wrench.force.y;
-        tmp[2] = wrench.force.z;
-        tmp    = Rot * tmp;
-        wrench.force.x = tmp[0] * scale_F[0];
-        wrench.force.y = tmp[1] * scale_F[1];
-        wrench.force.z = tmp[2] * scale_F[2];
 
-        // Rotate the torque vector
-        tmp[0] = wrench.torque.x;
-        tmp[1] = wrench.torque.y;
-        tmp[2] = wrench.torque.z;
-        tmp    = Rot * tmp;
-        wrench.torque.x = tmp[0];
-        wrench.torque.y = tmp[1];
-        wrench.torque.z = tmp[2];
+    // Rotate the force vector
+    tmp[0] = wrench.force.x;
+    tmp[1] = wrench.force.y;
+    tmp[2] = wrench.force.z;
+    tmp    = Rot * tmp;
+    wrench.force.x = tmp[0] * scale_F[0];
+    wrench.force.y = tmp[1] * scale_F[1];
+    wrench.force.z = tmp[2] * scale_F[2];
 
-        pub_bias_status.publish(bias_status);
+    // Rotate the torque vector
+    tmp[0] = wrench.torque.x;
+    tmp[1] = wrench.torque.y;
+    tmp[2] = wrench.torque.z;
+    tmp    = Rot * tmp;
+    wrench.torque.x = tmp[0];
+    wrench.torque.y = tmp[1];
+    wrench.torque.z = tmp[2];
+
+
+    pub_bias_status.publish(bias_status);
 
 }
 
-  void NetFTRDTDriverBias::set_compute_bias(bool val){
+void NetFTRDTDriverBias::set_compute_bias(bool val){
     this->bComputeBias = val;
-  }
+}
 void NetFTRDTDriverBias::compute_bias(const geometry_msgs::Wrench& wrench){
     if(bComputeBias){
         if(count < num_points){
@@ -109,9 +131,9 @@ bool NetFTRDTDriverBias::service_callback(netft_rdt_driver::String_cmd::Request&
         response.res = "commands : bias | print";
         return true;
     }else{
-       std::string res =  "no such cmd [" +  cmd +  "] defined        NetFTRDTDriverBias::service_callback";
-       response.res = res;
-       return false;
+        std::string res =  "no such cmd [" +  cmd +  "] defined        NetFTRDTDriverBias::service_callback";
+        response.res = res;
+        return false;
     }
 
 }
