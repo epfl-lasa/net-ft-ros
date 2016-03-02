@@ -15,7 +15,7 @@ generate_messages(DEPENDENCIES std_msgs)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS genmsg roscpp geometry_msgs diagnostic_updater diagnostic_msgs message_runtime tf
+  CATKIN_DEPENDS roscpp geometry_msgs diagnostic_updater diagnostic_msgs message_runtime tf
 #  DEPENDS system_lib
 )
 
@@ -45,6 +45,8 @@ include_directories(
 
 add_library(${PROJECT_NAME} ${SRC_FILES} ${HEADER_FILES} )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} )
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(netft_node ${SRC_DIR}/netft_node.cpp      )
 target_link_libraries(netft_node ${PROJECT_NAME} boost_program_options)
+
