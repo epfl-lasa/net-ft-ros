@@ -15,7 +15,7 @@ generate_messages(DEPENDENCIES std_msgs)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp geometry_msgs diagnostic_updater diagnostic_msgs message_runtime tf
+  CATKIN_DEPENDS genmsg roscpp geometry_msgs diagnostic_updater diagnostic_msgs message_runtime tf
 #  DEPENDS system_lib
 )
 
