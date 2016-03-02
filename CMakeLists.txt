@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(netft_rdt_driver)
 
 
-find_package(catkin REQUIRED COMPONENTS roscpp diagnostic_updater std_msgs geometry_msgs message_generation tf)
+find_package(catkin REQUIRED COMPONENTS genmsg roscpp diagnostic_updater std_msgs geometry_msgs message_generation tf)
 find_package(Boost)
 
 
