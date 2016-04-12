@@ -19,7 +19,7 @@ the status should be: Healthy.
 ## Launch
 
 ```
-$ roslaunch ft_sensor.launch 
+$ roslaunch netft_rdt_driver ft_sensor.launch 
 ```
 
 The force-torque information will be published on the topic: **/ft_sensor/netft_data**.
