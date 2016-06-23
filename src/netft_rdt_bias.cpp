@@ -26,6 +26,7 @@ NetFTRDTDriverBias::NetFTRDTDriverBias(ros::NodeHandle& nh, double rot, const tf
 
     service_server  = nh.advertiseService("bias_cmd",&NetFTRDTDriverBias::service_callback,this);
     pub_bias_status = nh.advertise<std_msgs::Bool>("bias_status",1);
+    pub_bias = nh.advertise<geometry_msgs::Wrench>("bias",1);
     bias_status.data = false; // bias not set
     bComputeBias    = false;
 
@@ -56,6 +57,13 @@ void NetFTRDTDriverBias::update(geometry_msgs::Wrench& wrench){
     wrench.torque.y = wrench.torque.y - torque_b.y;
     wrench.torque.z = wrench.torque.z - torque_b.z;
 
+    bias_msg.force.x = force_b.x;
+    bias_msg.force.y = force_b.y;
+    bias_msg.force.z = force_b.z;
+
+    bias_msg.torque.x = torque_b.x;
+    bias_msg.torque.y = torque_b.y;
+    bias_msg.torque.z = torque_b.z;
 
 
     // Rotate the force vector
@@ -78,6 +86,7 @@ void NetFTRDTDriverBias::update(geometry_msgs::Wrench& wrench){
 
 
     pub_bias_status.publish(bias_status);
+    pub_bias.publish(bias_msg);
 
 }
 

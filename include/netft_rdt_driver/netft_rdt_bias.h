@@ -41,10 +41,12 @@ private:
     geometry_msgs::Vector3  torque_b, torque_b_tmp;
 
     geometry_msgs::Wrench   wrench_tmp;
+    geometry_msgs::Wrench   bias_msg;
     double                  alpha;
 
     ros::ServiceServer    service_server;
     ros::Publisher        pub_bias_status;
+    ros::Publisher        pub_bias;
     std_msgs::Bool        bias_status;
 
     tf::Vector3           scale_F;
