@@ -32,7 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-/** 
+/**
  * Simple stand-alone ROS node that takes data from NetFT sensor and
  * Publishes it ROS topic
  */
@@ -53,7 +53,7 @@ using namespace std;
 
 
 int main(int argc, char **argv)
-{ 
+{
   ros::init(argc, argv, "netft_node");
 
   ros::NodeHandle nh;
@@ -70,97 +70,96 @@ int main(int argc, char **argv)
 
   po::options_description desc("Options");
   desc.add_options()
-    ("help", "display help")
-    ("rate", po::value<float>(&pub_rate_hz)->default_value(100.0), "set publish rate (in hertz)")
-    ("wrench", "publish older Wrench message type instead of WrenchStamped")
-    ("bias",po::value<bool>(&b_bias_on_startup)->default_value(false),"if true computes the bias and substracts it at every time step from the signal")
-    ("rot",po::value<double>(&rot)->default_value(0.0)," roation of the frame of reference of force torque vectors")
-    ("alpha",po::value<double>(&alpha)->default_value(0.0), "alpha of exponential smoother, alpha \in [0,1]" )
-    ("scale_x",po::value<double>(&scale_F[0])->default_value(1.0)," x-axis scale factor [-1 or 1]")
-    ("scale_y",po::value<double>(&scale_F[1])->default_value(1.0)," y-axis scale factor [-1 or 1]")
-    ("scale_z",po::value<double>(&scale_F[2])->default_value(1.0)," z-axis scale factor [-1 or 1]")
-    ("address", po::value<string>(&address), "IP address of NetFT box")
-    ;
-     
+  ("help", "display help")
+  ("rate", po::value<float>(&pub_rate_hz)->default_value(100.0),
+   "set publish rate (in hertz)")
+  ("wrench", "publish older Wrench message type instead of WrenchStamped")
+  ("bias",po::value<bool>(&b_bias_on_startup)->default_value(false),
+   "if true computes the bias and substracts it at every time step from the signal")
+  ("rot",po::value<double>(&rot)->default_value(0.0),
+   " roation of the frame of reference of force torque vectors")
+  ("alpha",po::value<double>(&alpha)->default_value(0.0),
+   "alpha of exponential smoother, alpha \in [0,1]" )
+  ("scale_x",po::value<double>(&scale_F[0])->default_value(1.0),
+   " x-axis scale factor [-1 or 1]")
+  ("scale_y",po::value<double>(&scale_F[1])->default_value(1.0),
+   " y-axis scale factor [-1 or 1]")
+  ("scale_z",po::value<double>(&scale_F[2])->default_value(1.0),
+   " z-axis scale factor [-1 or 1]")
+  ("address", po::value<string>(&address), "IP address of NetFT box")
+  ;
+
   po::positional_options_description p;
   p.add("address",  1);
 
   po::variables_map vm;
-  po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+  po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(),
+            vm);
   po::notify(vm);
 
-  if (vm.count("help"))
-  {
+  if (vm.count("help")) {
     cout << desc << endl;
     //usage(progname);
     exit(EXIT_SUCCESS);
-  }      
+  }
 
-  if (!vm.count("address"))
-  {
+  if (!vm.count("address")) {
     cout << desc << endl;
     cerr << "Please specify address of NetFT" << endl;
     exit(EXIT_FAILURE);
   }
 
   bool publish_wrench = false;
-  if (vm.count("wrench"))
-  {
+  if (vm.count("wrench")) {
     publish_wrench = true;
     ROS_WARN("Publishing NetFT data as geometry_msgs::Wrench is deprecated");
   }
 
-  std::auto_ptr<netft_rdt_driver::NetFTRDTDriver> netft(new netft_rdt_driver::NetFTRDTDriver(address));
+  std::auto_ptr<netft_rdt_driver::NetFTRDTDriver> netft(new
+      netft_rdt_driver::NetFTRDTDriver(address));
   ros::Publisher pub;
-  if (publish_wrench)
-  {
+  if (publish_wrench) {
     pub = nh.advertise<geometry_msgs::Wrench>("netft_data", 100);
-  }
-  else 
-  {
+  } else {
     pub = nh.advertise<geometry_msgs::WrenchStamped>("netft_data", 100);
   }
   ros::Rate pub_rate(pub_rate_hz);
   geometry_msgs::WrenchStamped data;
 
   ros::Duration                    diag_pub_duration(1.0);
-  ros::Publisher                   diag_pub = nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics", 2);
+  ros::Publisher                   diag_pub =
+    nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics", 2);
   diagnostic_msgs::DiagnosticArray diag_array;
   diag_array.status.reserve(1);
   diagnostic_updater::DiagnosticStatusWrapper diag_status;
-  ros::Time                                   last_diag_pub_time(ros::Time::now());
+  ros::Time                                   last_diag_pub_time(
+    ros::Time::now());
 
   /// Function to compute the BIAS in and subscract it.
 
   netft_rdt_driver::NetFTRDTDriverBias        bias(nh,rot,scale_F,alpha);
 
 
-    if(b_bias_on_startup){
-      bias.set_compute_bias(true);
-      }
-  while (ros::ok())
-  {
-    if (netft->waitForNewData())
-    {
+  if(b_bias_on_startup) {
+    bias.set_compute_bias(true);
+  }
+  while (ros::ok()) {
+    if (netft->waitForNewData()) {
       netft->getData(data);
       // set the frame_id field (from rosparam loaded above)
       // defaults to empty string
       data.header.frame_id = frame_id;
-      if (publish_wrench) 
-      {
+      if (publish_wrench) {
         pub.publish(data.wrench);
-      }
-      else 
-      {
+      } else {
         bias.compute_bias(data.wrench);
         bias.update(data.wrench);
         pub.publish(data);
       }
     }
-    
+
     ros::Time current_time(ros::Time::now());
-    if ( (current_time - last_diag_pub_time) > diag_pub_duration )
-    {
+    if ( (current_time - last_diag_pub_time) > diag_pub_duration ) {
       diag_array.status.clear();
       netft->diagnostics(diag_status);
       diag_array.status.push_back(diag_status);
@@ -168,10 +167,10 @@ int main(int argc, char **argv)
       diag_pub.publish(diag_array);
       last_diag_pub_time = current_time;
     }
-    
+
     ros::spinOnce();
     pub_rate.sleep();
   }
-  
+
   return 0;
 }
