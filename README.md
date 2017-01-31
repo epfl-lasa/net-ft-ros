@@ -80,3 +80,5 @@ Add a [**Wrench**](http://wiki.ros.org/rviz/DisplayTypes/Wrench) message type in
 it is subscribing to the appropriate ros message, namely **/ft_sensor/netft_data** 
 
 
+:bangbang: The node publishes force-torque data in a left-handed system (LHS).
+
