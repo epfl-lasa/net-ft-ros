@@ -67,6 +67,7 @@ before_install:
   - source /opt/ros/$ROS_DISTRO/setup.bash
   # Prepare rosdep to install dependencies.
   - pip install catkin_pkg
+  - pip install empy
   - sudo rosdep init
   - rosdep update
 
