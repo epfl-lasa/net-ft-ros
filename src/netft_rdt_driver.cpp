@@ -146,8 +146,8 @@ NetFTRDTDriver::NetFTRDTDriver(const std::string &address) :
   // Force/Sclae is based on counts per force/torque value from device
   // these value are manually read from device webserver, but in future they
   // may be collected using http get requests
-  static const double counts_per_force = 1000000;
-  static const double counts_per_torque = 1000000;
+  static const double counts_per_force = 224808.9375;
+  static const double counts_per_torque = 8850746;
   force_scale_ = 1.0 / counts_per_force;
   torque_scale_ = 1.0 / counts_per_torque;
 
