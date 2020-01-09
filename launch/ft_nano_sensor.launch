@@ -3,17 +3,17 @@
 	<!-- Normal Force Torque Sensor -->
         <!-- <arg  name="ip_address"  default="128.178.145.89"/> -->
        <!-- <arg  name="ip_address"  default="128.178.145.98"/> -->
-
-	<!-- Second Force-Torque Sensor -->
+ 
+ 	<!-- Second Force-Torque Sensor -->
 	<!-- <arg  name="ip_address_1"  value="128.178.145.248"/> -->
 
 	<!-- Nano Force-Torque Sensor -->
-        <!-- <arg  name="ip_address"  default="128.178.145.58"/> -->
+        <arg  name="ip_address"  default="128.178.145.58"/>
 
 	<!-- Default address over logal network -->
         <!-- <arg  name="ip_address"  default="192.168.0.50"/> -->
 
-        <arg  name="ip_address"  default="128.178.145.248"/>
+        <!-- <arg  name="ip_address"  default="128.178.145.248"/> -->
         <!-- <arg  name="ip_address"  default="192.168.0.50"/> -->
         <!-- <arg  name="ip_address"  default="192.168.0.2"/> -->
         <!-- <arg  name="ip_address"  default="192.168.0.20"/> -->
