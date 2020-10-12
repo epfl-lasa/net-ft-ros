@@ -46,7 +46,9 @@
 #include <unistd.h>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <boost/program_options.hpp>
+#include <zmq.hpp>
 
 namespace po = boost::program_options;
 using namespace std;
@@ -54,6 +56,11 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+  zmq::context_t context(1);
+  zmq::socket_t publisher(context, ZMQ_PUB);
+  publisher.bind("tcp://*:5555");
+
+
   ros::init(argc, argv, "netft_node");
 
   ros::NodeHandle nh;
@@ -156,6 +163,14 @@ int main(int argc, char **argv)
         bias.update(data.wrench);
         pub.publish(data);
       }
+
+      zmq::message_t topic("ft_sensor_data", 14);
+      publisher.send(topic, zmq::send_flags::sndmore);
+      std::string data_str = std::to_string(data.wrench.force.x) + "," + std::to_string(data.wrench.force.y) + "," + std::to_string(data.wrench.force.z) + ","
+                             + std::to_string(data.wrench.torque.x) + "," + std::to_string(data.wrench.torque.y) + "," + std::to_string(data.wrench.torque.z);
+      zmq::message_t message(data_str.size());
+      std::memcpy (message.data(), data_str.data(), data_str.size());
+      publisher.send(message, zmq::send_flags::none);
     }
 
     ros::Time current_time(ros::Time::now());

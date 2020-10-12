@@ -4,6 +4,7 @@ project(netft_rdt_driver)
 
 find_package(catkin REQUIRED COMPONENTS genmsg roscpp diagnostic_updater std_msgs geometry_msgs message_generation tf)
 find_package(Boost)
+find_package(cppzmq)
 
 
 add_service_files(FILES
@@ -48,5 +49,5 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} )
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(netft_node ${SRC_DIR}/netft_node.cpp      )
-target_link_libraries(netft_node ${PROJECT_NAME} boost_program_options)
+target_link_libraries(netft_node ${PROJECT_NAME} boost_program_options cppzmq)
 
