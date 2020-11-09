@@ -33,13 +33,12 @@
  *********************************************************************/
 
 #include "netft_rdt_driver/netft_rdt_driver.h"
-#include <stdint.h>
 #include <exception>
+#include <stdint.h>
 
 using boost::asio::ip::udp;
 
-namespace netft_rdt_driver
-{
+namespace netft_rdt_driver {
 
 struct RDTRecord {
   uint32_t rdt_sequence_;
@@ -52,25 +51,20 @@ struct RDTRecord {
   int32_t ty_;
   int32_t tz_;
 
-  enum {RDT_RECORD_SIZE = 36};
+  enum { RDT_RECORD_SIZE = 36 };
   void unpack(const uint8_t *buffer);
   static uint32_t unpack32(const uint8_t *buffer);
 };
 
-uint32_t RDTRecord::unpack32(const uint8_t *buffer)
-{
-  return
-    ( uint32_t(buffer[0]) << 24) |
-    ( uint32_t(buffer[1]) << 16) |
-    ( uint32_t(buffer[2]) << 8 ) |
-    ( uint32_t(buffer[3]) << 0 ) ;
+uint32_t RDTRecord::unpack32(const uint8_t *buffer) {
+  return (uint32_t(buffer[0]) << 24) | (uint32_t(buffer[1]) << 16) |
+         (uint32_t(buffer[2]) << 8) | (uint32_t(buffer[3]) << 0);
 }
 
-void RDTRecord::unpack(const uint8_t *buffer)
-{
+void RDTRecord::unpack(const uint8_t *buffer) {
   rdt_sequence_ = unpack32(buffer + 0);
-  ft_sequence_  = unpack32(buffer + 4);
-  status_       = unpack32(buffer + 8);
+  ft_sequence_ = unpack32(buffer + 4);
+  status_ = unpack32(buffer + 8);
   fx_ = unpack32(buffer + 12);
   fy_ = unpack32(buffer + 16);
   fz_ = unpack32(buffer + 20);
@@ -78,7 +72,6 @@ void RDTRecord::unpack(const uint8_t *buffer)
   ty_ = unpack32(buffer + 28);
   tz_ = unpack32(buffer + 32);
 }
-
 
 struct RDTCommand {
   uint16_t command_header_;
@@ -89,27 +82,26 @@ struct RDTCommand {
     // empty
   }
 
-  enum {HEADER=0x1234};
+  enum { HEADER = 0x1234 };
 
   // Possible values for command_
   enum {
-    CMD_STOP_STREAMING=0,
-    CMD_START_HIGH_SPEED_STREAMING=2,
+    CMD_STOP_STREAMING = 0,
+    CMD_START_HIGH_SPEED_STREAMING = 2,
     // More command values are available but are not used by this driver
   };
 
   // Special values for sample count
-  enum { INFINITE_SAMPLES=0 };
+  enum { INFINITE_SAMPLES = 0 };
 
-  enum {RDT_COMMAND_SIZE = 8};
+  enum { RDT_COMMAND_SIZE = 8 };
 
-  //!Packet structure into buffer for network transport
+  //! Packet structure into buffer for network transport
   //  Buffer should be RDT_COMMAND_SIZE
   void pack(uint8_t *buffer) const;
 };
 
-void RDTCommand::pack(uint8_t *buffer) const
-{
+void RDTCommand::pack(uint8_t *buffer) const {
   // Data is big-endian
   buffer[0] = (command_header_ >> 8) & 0xFF;
   buffer[1] = (command_header_ >> 0) & 0xFF;
@@ -121,24 +113,15 @@ void RDTCommand::pack(uint8_t *buffer) const
   buffer[7] = (sample_count_ >> 0) & 0xFF;
 }
 
-
-NetFTRDTDriver::NetFTRDTDriver(const std::string &address) :
-  address_(address),
-  socket_(io_service_),
-  stop_recv_thread_(false),
-  recv_thread_running_(false),
-  packet_count_(0),
-  lost_packets_(0),
-  out_of_order_count_(0),
-  seq_counter_(0),
-  diag_packet_count_(0),
-  last_diag_pub_time_(ros::Time::now()),
-  last_rdt_sequence_(0),
-  system_status_(0)
-{
+NetFTRDTDriver::NetFTRDTDriver(const std::string &address)
+    : address_(address), socket_(io_service_), stop_recv_thread_(false),
+      recv_thread_running_(false), packet_count_(0), lost_packets_(0),
+      out_of_order_count_(0), seq_counter_(0), diag_packet_count_(0),
+      last_diag_pub_time_(ros::Time::now()), last_rdt_sequence_(0),
+      system_status_(0) {
   // Construct UDP socket
-  udp::endpoint netft_endpoint( boost::asio::ip::address_v4::from_string(address),
-                                RDT_PORT);
+  udp::endpoint netft_endpoint(
+      boost::asio::ip::address_v4::from_string(address), RDT_PORT);
   socket_.open(udp::v4());
   socket_.connect(netft_endpoint);
 
@@ -156,7 +139,7 @@ NetFTRDTDriver::NetFTRDTDriver(const std::string &address) :
 
   // Since start steaming command is sent with UDP packet,
   // the packet could be lost, retry startup 10 times before giving up
-  for (int i=0; i<10; ++i) {
+  for (int i = 0; i < 10; ++i) {
     startStreaming();
     if (waitForNewData())
       break;
@@ -167,28 +150,24 @@ NetFTRDTDriver::NetFTRDTDriver(const std::string &address) :
       throw std::runtime_error("No data received from NetFT device");
     }
   }
-
 }
 
-
-NetFTRDTDriver::~NetFTRDTDriver()
-{
+NetFTRDTDriver::~NetFTRDTDriver() {
   // TODO stop transmission,
   // stop thread
   stop_recv_thread_ = true;
-  if (!recv_thread_.timed_join(boost::posix_time::time_duration(0,0,1,0))) {
+  if (!recv_thread_.timed_join(boost::posix_time::time_duration(0, 0, 1, 0))) {
     ROS_WARN("Interrupting recv thread");
     recv_thread_.interrupt();
-    if (!recv_thread_.timed_join(boost::posix_time::time_duration(0,0,1,0))) {
+    if (!recv_thread_.timed_join(
+            boost::posix_time::time_duration(0, 0, 1, 0))) {
       ROS_WARN("Failed second join to recv thread");
     }
   }
   socket_.close();
 }
 
-
-bool NetFTRDTDriver::waitForNewData()
-{
+bool NetFTRDTDriver::waitForNewData() {
   // Wait upto 100ms for new data
   bool got_new_data = false;
   {
@@ -201,9 +180,7 @@ bool NetFTRDTDriver::waitForNewData()
   return got_new_data;
 }
 
-
-void NetFTRDTDriver::startStreaming(void)
-{
+void NetFTRDTDriver::startStreaming(void) {
   // Command NetFT to start data transmission
   RDTCommand start_transmission;
   start_transmission.command_ = RDTCommand::CMD_START_HIGH_SPEED_STREAMING;
@@ -214,18 +191,15 @@ void NetFTRDTDriver::startStreaming(void)
   socket_.send(boost::asio::buffer(buffer, RDTCommand::RDT_COMMAND_SIZE));
 }
 
-
-
-void NetFTRDTDriver::recvThreadFunc()
-{
+void NetFTRDTDriver::recvThreadFunc() {
   try {
     recv_thread_running_ = true;
     RDTRecord rdt_record;
     geometry_msgs::WrenchStamped tmp_data;
-    uint8_t buffer[RDTRecord::RDT_RECORD_SIZE+1];
+    uint8_t buffer[RDTRecord::RDT_RECORD_SIZE + 1];
     while (!stop_recv_thread_) {
-      size_t len = socket_.receive(boost::asio::buffer(buffer,
-                                   RDTRecord::RDT_RECORD_SIZE+1));
+      size_t len = socket_.receive(
+          boost::asio::buffer(buffer, RDTRecord::RDT_RECORD_SIZE + 1));
       if (len != RDTRecord::RDT_RECORD_SIZE) {
         ROS_WARN("Receive size of %d bytes does not match expected size of %d",
                  int(len), int(RDTRecord::RDT_RECORD_SIZE));
@@ -236,7 +210,8 @@ void NetFTRDTDriver::recvThreadFunc()
           boost::unique_lock<boost::mutex> lock(mutex_);
           system_status_ = rdt_record.status_;
         }
-        int32_t seqdiff = int32_t(rdt_record.rdt_sequence_ - last_rdt_sequence_);
+        int32_t seqdiff =
+            int32_t(rdt_record.rdt_sequence_ - last_rdt_sequence_);
         last_rdt_sequence_ = rdt_record.rdt_sequence_;
         if (seqdiff < 1) {
           boost::unique_lock<boost::mutex> lock(mutex_);
@@ -270,18 +245,15 @@ void NetFTRDTDriver::recvThreadFunc()
   }
 }
 
-
-void NetFTRDTDriver::getData(geometry_msgs::WrenchStamped &data)
-{
+void NetFTRDTDriver::getData(geometry_msgs::WrenchStamped &data) {
   {
     boost::unique_lock<boost::mutex> lock(mutex_);
     data = new_data_;
   }
 }
 
-
-void NetFTRDTDriver::diagnostics(diagnostic_updater::DiagnosticStatusWrapper &d)
-{
+void NetFTRDTDriver::diagnostics(
+    diagnostic_updater::DiagnosticStatusWrapper &d) {
   // Publish diagnostics
   d.name = "NetFT RDT Driver : " + address_;
 
@@ -317,9 +289,9 @@ void NetFTRDTDriver::diagnostics(diagnostic_updater::DiagnosticStatusWrapper &d)
 
   geometry_msgs::WrenchStamped data;
   getData(data);
-  d.addf("Force X (N)",   "%f", data.wrench.force.x);
-  d.addf("Force Y (N)",   "%f", data.wrench.force.y);
-  d.addf("Force Z (N)",   "%f", data.wrench.force.z);
+  d.addf("Force X (N)", "%f", data.wrench.force.x);
+  d.addf("Force Y (N)", "%f", data.wrench.force.y);
+  d.addf("Force Z (N)", "%f", data.wrench.force.z);
   d.addf("Torque X (Nm)", "%f", data.wrench.torque.x);
   d.addf("Torque Y (Nm)", "%f", data.wrench.torque.y);
   d.addf("Torque Z (Nm)", "%f", data.wrench.torque.z);
@@ -328,6 +300,4 @@ void NetFTRDTDriver::diagnostics(diagnostic_updater::DiagnosticStatusWrapper &d)
   diag_packet_count_ = packet_count_;
 }
 
-
 } // end namespace netft_rdt_driver
-

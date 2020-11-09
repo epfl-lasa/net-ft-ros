@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>netft_rdt_msgs</name>
+    <version>0.0.0</version>
+    <description>The netft_rdt_msgs package containing the srv files for the netft_rdt_driver package</description>
+
+    <maintainer email="dominic.reber@epfl.ch">Dominic Reber</maintainer>
+    <license>BSD</license>
+    <author email="dominic.reber@epfl.ch">Dominic Reber</author>
+
+    <buildtool_depend>catkin</buildtool_depend>
+    <build_depend>message_generation</build_depend>
+    <depend>std_msgs</depend>
+    <exec_depend>message_runtime</exec_depend>
+</package>

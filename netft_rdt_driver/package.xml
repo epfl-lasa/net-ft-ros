@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>netft_rdt_driver</name>
+    <version>0.0.1</version>
+    <description>Driver for NetFT sensor that uses Raw Data Transfer (RDT) protocol.</description>
+
+    <maintainer email="dominic.reber@epfl.ch">Dominic Reber</maintainer>
+    <license>BSD</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+    <depend>roscpp</depend>
+    <depend>std_msgs</depend>
+    <depend>geometry_msgs</depend>
+    <depend>diagnostic_msgs</depend>
+    <depend>diagnostic_updater</depend>
+    <depend>tf</depend>
+    <depend>netft_rdt_msgs</depend>
+
+    <export>
+        <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lnetft_rdt_driver -Wl,-rpath,${prefix}/lib"/>
+    </export>
+</package>
+
