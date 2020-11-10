@@ -25,9 +25,9 @@
               required="true" output="screen"/>
     </group>
 
-    <group if="$(arg rqt_multiplot_bringup">
+    <group if="$(arg rqt_multiplot_bringup)">
         <node name="rqt_multiplot" pkg="rqt_multiplot" type="rqt_multiplot"
-              args="--multiplot-config $(find netft_rdt_driver)/config/force_torque_readings.xml"/>
+              args="--multiplot-config $(find netft_rdt_driver)/config/force_torque_readings.xml --multiplot-run-all" required="false"/>
     </group>
 
 </launch>
