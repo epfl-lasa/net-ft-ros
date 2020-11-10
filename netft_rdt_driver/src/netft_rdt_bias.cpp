@@ -134,11 +134,12 @@ bool NetFTRDTDriverBias::service_callback(
     response.res = " command [" + cmd + "] sucessfully called";
     return true;
   } else if (cmd == "print") {
-    response.res = "commands : bias | print";
+    print_bias();
+    response.res = " command [" + cmd + "] sucessfully called";
     return true;
   } else {
-    std::string res = "no such cmd [" + cmd +
-                      "] defined        NetFTRDTDriverBias::service_callback";
+    std::string res = "NetFTRDTDriverBias::service_callback: no such cmd [" +
+                      cmd + "] defined, commands : bias | print";
     response.res = res;
     return false;
   }
