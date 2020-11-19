@@ -8,7 +8,7 @@ find_package(Boost)
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS roscpp geometry_msgs diagnostic_msgs diagnostic_updater tf
+    CATKIN_DEPENDS roscpp geometry_msgs diagnostic_msgs diagnostic_updater tf netft_rdt_msgs
     #  DEPENDS system_lib
 )
 
