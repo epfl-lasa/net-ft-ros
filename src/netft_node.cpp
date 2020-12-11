@@ -60,7 +60,6 @@ int main(int argc, char **argv)
   zmq::socket_t publisher(context, ZMQ_PUB);
   publisher.bind("tcp://*:5555");
 
-
   ros::init(argc, argv, "netft_node");
 
   ros::NodeHandle nh;
@@ -164,8 +163,6 @@ int main(int argc, char **argv)
         pub.publish(data);
       }
 
-      zmq::message_t topic("ft_sensor_data", 14);
-      publisher.send(topic, zmq::send_flags::sndmore);
       std::string data_str = std::to_string(data.wrench.force.x) + "," + std::to_string(data.wrench.force.y) + "," + std::to_string(data.wrench.force.z) + ","
                              + std::to_string(data.wrench.torque.x) + "," + std::to_string(data.wrench.torque.y) + "," + std::to_string(data.wrench.torque.z);
       zmq::message_t message(data_str.size());
