@@ -37,15 +37,16 @@
  * publishes it ROS topic
  */
 
+#include <boost/program_options.hpp>
+#include <iostream>
+#include <memory>
+
 #include "diagnostic_msgs/DiagnosticArray.h"
 #include "diagnostic_updater/DiagnosticStatusWrapper.h"
 #include "geometry_msgs/WrenchStamped.h"
 #include "netft_rdt_driver/netft_rdt_bias.h"
 #include "netft_rdt_driver/netft_rdt_driver.h"
 #include "ros/ros.h"
-#include <boost/program_options.hpp>
-#include <iostream>
-#include <memory>
 
 namespace po = boost::program_options;
 using namespace std;

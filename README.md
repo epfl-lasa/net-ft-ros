@@ -11,7 +11,7 @@ Repository containing ROS packages and manuals for ATI 6-axis force torque senso
 The ATI 6-axis force torque sensors measure all six components of force and torque with respect to a sensing reference frame. 
 There are two different sensors available at the lab:
 
-#### Gamma model
+### Gamma model
 The Gamma model has extremely-high strength with low weight and has a high signal-to-noise ratio. For more information 
 and technical drawings, refer to https://www.ati-ia.com/products/ft/ft_models.aspx?id=Gamma. The sensing reference frame 
 is indicated on the sensor itself and visualized in the picture below. The origin of the reference frame is located 
@@ -19,7 +19,7 @@ at the centre of the sensor flange (i.e. the flange surface is part of the xy-pl
 
 ![Gamma](docs/gamma.png)
 
-#### Nano model
+### Nano model
 TODO
 
 ## Hardware setup 
@@ -39,7 +39,7 @@ Note that the mounting flange plate has two pins on the sensor side, whereas the
 
 ![Pins](docs/pins.png)
 
-#### Mount the sensor on the robot
+### Mount the sensor on the robot
 To mount the sensor on the robot:
 1. Insert the mounting flange plate into the mounting ring.
 2. Screw the mounting plate onto the robot end-effector flange (which screws). Ideally, the sensing 
@@ -54,7 +54,7 @@ indication on the mounting flange plate can be seen at the middle of the cavity 
 
 ![Mounting](docs/mounting.png)
 
-#### Set up ATI Net Box
+### Set up ATI Net Box
 Connect the other side of the transducer cable to the ATI Net Box and connect the API Net Box to the power supply.
 Finally, connect the ATI Net Box to the local network with the ethernet cable. **ATTENTION:** the ethernet cable has to be
 plugged to the port with number *D416.24* in the robot room. 
@@ -67,7 +67,7 @@ If you can ping the ATI Net Box, then you are ready to use the force torque sens
 and - if the pinging was successful - you should be able to see a webpage which shows the status of the sensor. The status should be *Healthy*.
 Do not get confused by the contents of this webpage, IT IS NOT CORRECT?!?!
 
-#### Tool side and transformations TODO
+### Tool side and transformations TODO
 - screws in ee: 4xM6x1.0 between 7 and 18mm outside mounting flange plate
 - screws on top: 4xM6x1.0 5.6 deep
 - ee transformation? PICTURE
@@ -107,7 +107,7 @@ wrench:
     y: -0.108128
     z: 0.22924
 ```
-#### Launch settings
+### Launch settings
 The *netft_rdt_driver* node can be configured with several parameters which are set via the launch file arguments:
 - **ip_adresss**: This is the static IP address of ATI Net Box currently in use for the force torque sensor.
 - **bias**: Boolean, if true, the bias of the force torque sensor is computed at the beginning and is then subtracted from the raw data.
@@ -124,7 +124,7 @@ that launches two *netft_rdt_driver* nodes, one per sensor. One sensor will then
 and the other one to **ft_sensor_right/netft_data**, where *ft_sensor_left* and *ft_sensor_right* are the names of these 
 two nodes, respectively.
 
-#### Bias computation through ROS service
+### Bias computation through ROS service
 The *netft_rdt_driver* node sets up a ROS service that can be called to compute and to print the bias of the force torque sensor,
 e.g.
 ```
@@ -150,7 +150,7 @@ f (ft_client.call(srv))
 }
 ```
 
-#### RQT Multiplot
+### RQT Multiplot
 The wrench measurements from the force torque sensor can be visualized in rqt_multiplot. If you don't have [rqt_multiplot](https://github.com/ANYbotics/rqt_multiplot_plugin) 
 installed yet, run
 ```
@@ -168,7 +168,9 @@ to launch rqt_multiplot together with your *netft_rdt_driver* node.
 Side note: A rqt_multiplot configuration file for two sensors at the same time is not provided, but 
 can be easily created and added to this repository via pull-request.
 
-#### RViz
+### RViz
 You can add a [**Wrench**](http://wiki.ros.org/rviz/DisplayTypes/Wrench) message type in RViz. Make sure
 it is subscribing to the correct ROS topic (usually **/ft_sensor/netft_data**) and that RViz knows the transform from any existing 
 frame to the sensor frame set with the parameter **frame_id**. If this is not the case, publish such a transform to the **/tf_static** topic from the terminal.
+
+TODO smaller image size
