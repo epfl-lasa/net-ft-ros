@@ -1,0 +1,15 @@
+services:
+  ros-netft:
+    build:
+      network: host
+      context: .
+      ssh:
+        default: ${SSH_AUTH_SOCK}
+    image: ros-noetic-netft:latest
+    container_name: ros_netft
+    network_mode: host
+    stdin_open: true
+    tty: true
+    environment:
+      - ROS_MASTER_URI=http://localhost:11311
+      - ROS_IP=127.0.0.1
